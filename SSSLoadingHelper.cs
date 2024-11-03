@@ -48,7 +48,6 @@ namespace SSSoftcoded
                     }
                 }
 
-
                 if (optionsDict["customWallpapers"] != "")
                 {
                     wallpaperFilePath = CorrectFilePath(optionsDict["customWallpapers"]);
