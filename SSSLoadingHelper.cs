@@ -18,11 +18,14 @@ namespace SSSoftcoded
         private static string regularSFXFilePath = GameProvider.Instance.GetApplicationPath("audio/sfx/");
 
         private static bool ignoreVanillaWallpapers = false;
+        public static bool ignoreVanillaLoadingScreenTips = false;
 
         private static SSSLoadableResource[] customWallpapers;
         private static SSSLoadableResource[] customMusicTracks;
         private static SSSLoadableResource[] customAmbientSFX;
         private static SSSLoadableResource[] customRegularSFX;
+
+        private static string[] customLoadingScreenTips;
 
         private static List<AudioClip> loadedAmbientSFX = new List<AudioClip>();
         private static List<AudioClip> loadedRegularSFX = new List<AudioClip>();
@@ -36,18 +39,15 @@ namespace SSSoftcoded
 
                 foreach (var s in lines)
                 {
-                    s.Trim();
+                    string line = s.Trim();
 
-                    if (s.StartsWith("#") || s.StartsWith("["))
+                    if (line.Contains("="))
                     {
-                        continue;
-                    }
-                    else if (s.Contains("="))
-                    {
-                        string[] split = s.Split('=');
+                        string[] split = line.Split('=');
                         optionsDict.Add(split[0], split[1]);
                     }
                 }
+
 
                 if (optionsDict["customWallpapers"] != "")
                 {
@@ -68,6 +68,10 @@ namespace SSSoftcoded
                 if (optionsDict["ignoreVanillaWallpapers"] == "true")
                 {
                     ignoreVanillaWallpapers = true;
+                }
+                if (optionsDict["ignoreVanillaLoadingScreenTips"] == "true")
+                {
+                    ignoreVanillaLoadingScreenTips = true;
                 }
             } else
             {
@@ -251,6 +255,11 @@ namespace SSSoftcoded
         public static SSSLoadableResource[] GetCustomWallPapers()
         {
             return customWallpapers;
+        }
+
+        public static string[] GetCustomLoadingScreenTips()
+        {
+            return customLoadingScreenTips;
         }
 
         public static SSSLoadableResource[] GetCustomMusicTracks()

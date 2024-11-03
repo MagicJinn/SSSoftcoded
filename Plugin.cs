@@ -13,17 +13,15 @@ using System;
 
 namespace SSSoftcoded
 {
-    [BepInPlugin("mod.clevercrumbish.SSSoftcoded", "Sunless Sea Softcoded", "1.0.0")]
+    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-        private void Start()
-        {
-            SSSLoadingHelper.Initialise();
-            SSSLoadingHelper.DocumentAllCustomContent();
-        }
         private void Awake()
         {
             Logger.LogInfo($"Loaded {PluginInfo.PLUGIN_GUID} {PluginInfo.PLUGIN_VERSION}!");
+            SSSLoadingHelper.Initialise();
+            SSSLoadingHelper.DocumentAllCustomContent();
+
             DoPatching();
         }
 
@@ -35,22 +33,39 @@ namespace SSSoftcoded
             Harmony.CreateAndPatchAll(typeof(StopAmbientFXPatch));
             Harmony.CreateAndPatchAll(typeof(PlayRegularSFXPatch));
             Harmony.CreateAndPatchAll(typeof(StopRegularSFXPatch));
+            CustomLoadingScreenTips();
+        }
+
+        private static void CustomLoadingScreenTips()
+        {
+            string[] oldTips = StaticEntities.LoadingScreenTips;
+            string[] customTips = SSSLoadingHelper.GetCustomLoadingScreenTips();
+
+            List<string> newTips = customTips.ToList();
+
+            if (!SSSLoadingHelper.ignoreVanillaLoadingScreenTips)
+            {
+                // Add old tips to the loading tips list
+                newTips.AddRange(oldTips);
+            }
+            StaticEntities.LoadingScreenTips = newTips.ToArray();
         }
     }
+}
 
-    [HarmonyPatch(typeof(LoadingScreen), "SetupBackground")]
-    class SetupBackgroundPatch
+[HarmonyPatch(typeof(LoadingScreen), "SetupBackground")]
+class SetupBackgroundPatch
+{
+    static bool Prefix(LoadingScreen __instance)
     {
-        static bool Prefix(LoadingScreen __instance)
+        GameObject gameObject = GameObject.Find("Wallpaper");
+        SSSLoadableResource[] wallpapers = SSSLoadingHelper.GetCustomWallPapers();
+        SSSLoadableResource chosenWallpaper = wallpapers[UnityEngine.Random.Range(0, wallpapers.Length - 1)];
+        Texture2D texture2D;
+        if (chosenWallpaper.GetExtension() != "")
         {
-            GameObject gameObject = GameObject.Find("Wallpaper");
-            SSSLoadableResource[] wallpapers = SSSLoadingHelper.GetCustomWallPapers();
-            SSSLoadableResource chosenWallpaper = wallpapers[UnityEngine.Random.Range(0, wallpapers.Length - 1)];
-            Texture2D texture2D;
-            if (chosenWallpaper.GetExtension() != "")
-            {
-                texture2D = SSSLoadingHelper.LoadWallpaperTexture(chosenWallpaper);
-            } else
+            texture2D = SSSLoadingHelper.LoadWallpaperTexture(chosenWallpaper);
+        } else
             {
                 texture2D = UnityEngine.Resources.Load("UI/Loading/Backgrounds/" + chosenWallpaper.GetName()) as Texture2D;
             }
