@@ -51,21 +51,22 @@ namespace SSSoftcoded
             StaticEntities.LoadingScreenTips = newTips.ToArray();
         }
     }
-}
 
-[HarmonyPatch(typeof(LoadingScreen), "SetupBackground")]
-class SetupBackgroundPatch
-{
-    static bool Prefix(LoadingScreen __instance)
+
+    [HarmonyPatch(typeof(LoadingScreen), "SetupBackground")]
+    class SetupBackgroundPatch
     {
-        GameObject gameObject = GameObject.Find("Wallpaper");
-        SSSLoadableResource[] wallpapers = SSSLoadingHelper.GetCustomWallPapers();
-        SSSLoadableResource chosenWallpaper = wallpapers[UnityEngine.Random.Range(0, wallpapers.Length - 1)];
-        Texture2D texture2D;
-        if (chosenWallpaper.GetExtension() != "")
+        static bool Prefix(LoadingScreen __instance)
         {
-            texture2D = SSSLoadingHelper.LoadWallpaperTexture(chosenWallpaper);
-        } else
+            GameObject gameObject = GameObject.Find("Wallpaper");
+            SSSLoadableResource[] wallpapers = SSSLoadingHelper.GetCustomWallPapers();
+            SSSLoadableResource chosenWallpaper = wallpapers[UnityEngine.Random.Range(0, wallpapers.Length - 1)];
+            Texture2D texture2D;
+            if (chosenWallpaper.GetExtension() != "")
+            {
+                texture2D = SSSLoadingHelper.LoadWallpaperTexture(chosenWallpaper);
+            }
+            else
             {
                 texture2D = UnityEngine.Resources.Load("UI/Loading/Backgrounds/" + chosenWallpaper.GetName()) as Texture2D;
             }
