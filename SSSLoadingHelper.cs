@@ -39,7 +39,7 @@ namespace SSSoftcoded
 
                 foreach (var s in lines)
                 {
-                    string line = s.Trim();
+                    string line = s.Replace(" ", "");
 
                     if (line.Contains("="))
                     {
