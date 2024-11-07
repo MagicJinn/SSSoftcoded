@@ -51,6 +51,12 @@ namespace SSSoftcoded
                 // Add old tips to the loading tips list
                 newTips.AddRange(oldTips);
             }
+            else if (customTips.Length == 0) // if the user ignores vanilla tips, but doesn't provide their own
+            {
+                // Add a fallback tip to prevent a crash, and to inform the user of the fact they've disabled vanilla tips without providing new ones
+                newTips.Add("Ignore Vanilla Loading Screen Tips is enabled, but no custom tips have been provided.");
+            }
+
             StaticEntities.LoadingScreenTips = newTips.ToArray();
         }
     }
