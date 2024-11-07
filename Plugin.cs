@@ -19,10 +19,14 @@ namespace SSSoftcoded
         private void Awake()
         {
             Logger.LogInfo($"Loaded {PluginInfo.PLUGIN_GUID} {PluginInfo.PLUGIN_VERSION}!");
+            DoPatching();
+        }
+
+        private void Start()
+        {
             SSSLoadingHelper.Initialise();
             SSSLoadingHelper.DocumentAllCustomContent();
-
-            DoPatching();
+            CustomLoadingScreenTips();
         }
 
         private void DoPatching()
@@ -33,7 +37,6 @@ namespace SSSoftcoded
             Harmony.CreateAndPatchAll(typeof(StopAmbientFXPatch));
             Harmony.CreateAndPatchAll(typeof(PlayRegularSFXPatch));
             Harmony.CreateAndPatchAll(typeof(StopRegularSFXPatch));
-            CustomLoadingScreenTips();
         }
 
         private static void CustomLoadingScreenTips()
